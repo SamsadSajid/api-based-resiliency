@@ -37,7 +37,7 @@ func HealthController(c *gin.Context) {
 
 	// pipelining two operations
 	conn.Send("SET", "health-matrix", hlthreq)
-	conn.Send("EXPIRE", "health-matrix", 10)
+	conn.Send("EXPIRE", "health-matrix", 11)
 
 	_, err := conn.Do("")
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/resilience-poc/pay-bill-resilience-service/config"
 	"github.com/resilience-poc/pay-bill-resilience-service/router"
+	"github.com/resilience-poc/pay-bill-resilience-service/subscriber"
 	"log"
 	"net/http"
 	"os"
@@ -35,6 +36,8 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
+	go subscriber.TTLListener()
 
 	signalChan := make(chan os.Signal, 2)
 	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
