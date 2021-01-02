@@ -1,20 +1,15 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"log"
 	"net/http"
 )
 
-type Matrix struct {
-	Biller1 string `json:"biller_1"`
-	Biller2 string `json:"biller_3"`
-	Biller3 string `json:"biller_2"`
-}
-
 func HealthController(c *gin.Context) {
-	var hlthreq Matrix
+	var hlthreq map[string]interface{}
 
 	if err := c.ShouldBind(&hlthreq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -35,13 +30,14 @@ func HealthController(c *gin.Context) {
 	conn := connPool.Get()
 	defer conn.Close()
 
+	jsonString, _ := json.Marshal(hlthreq)
+
 	// pipelining two operations
-	conn.Send("SET", "health-matrix", hlthreq)
-	conn.Send("EXPIRE", "health-matrix", 11)
+	conn.Send("SET", "health-matrix", jsonString)
+	conn.Send("EXPIRE", "health-matrix", 21)
 
 	_, err := conn.Do("")
 	if err != nil {
-		log.Println("ERROR: fail to set for key |health-matrix| for val |", hlthreq, "|, error ", err.Error(),
-			"with ttl 10s")
+		log.Println("ERROR: fail to set for key |health-matrix| for val |", hlthreq, "|, error ", err.Error())
 	}
 }

@@ -9,6 +9,7 @@ func New(router *gin.Engine) *gin.Engine {
 	base := router.Group("/api/")
 
 	base.POST("/update-biller-health", controller.HealthController)
+	base.GET("/get-biller-status", controller.GetBillerStatusController)
 
 	return router
 }
